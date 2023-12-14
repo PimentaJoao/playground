@@ -1,0 +1,10 @@
+program teste1
+declare
+    integer a, b;
+    integer result;
+begin
+    read(a);
+    read(b)&;
+    result := a + b;
+    write(result);
+end

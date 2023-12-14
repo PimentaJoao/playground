@@ -1,2 +1,5 @@
 a.out
 test.txt
+*.tab.h
+*.tab.c
+*.yy.c
