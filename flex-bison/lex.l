@@ -1,6 +1,7 @@
 %{
 #include <ctype.h>
 #include "tabela_simbolos.h"
+#include "bison.tab.h"
 
 extern SymbolTable symTable; // Declare the symbol table
 
@@ -11,65 +12,68 @@ void yyerror(char* message);
 void handleToken(SymbolTable* table, char* token_name);
 %}
 
-space          [ ]*
+%x COMMENT1 COMMENT2
+
 caractere      [^"]
 digit          [0-9]
-letter   	   [A-Za-z_]
-identifier 	   {letter}({letter}|{digit}|_)*
+letter   	   [A-Za-z]
+identifier 	   {letter}({letter}|{digit})*
 literal        \"{caractere}\"
 constant       {digit}+
-shiftop        <<|>>|<<<|>>>
-mulop          \*|\/|mod|and
-addop          \+|\-|or
-relop          =|>|>=|<|<=|<>
-assignop       :=
-negop          not
-modop          \%
-semicolon      \;
-comma          \,
-open_p         \(
-close_p        \)
-
 
 %%
 \n          	   ++line_num;
-
-"{"[^}\n]*"}"     /* come comentários de linha única */
-[ \t\n]+          /* come espaços em branco (white spaces) */;
+[ \t]+            /* Ignora espaços em branco (white spaces) */
+"%"[^\n]*         /* Ignora comentários em linha única (iniciados por %) */
+\"[^\"\n]*\"      /* Ignora cadeias dentro de aspas duplas */
 
 quit         	   return 0;
 
+program           return(PROGRAM);
+declare           return(DECLARE);
+begin             return(BEGIN);
+integer           return(INTEGER);
+decimal           return(DECIMAL);
+if                return(IF);
+then              return(THEN);
+else              return(ELSE);
+end               return(END);
+do                return(DO);
+while             return(WHILE);
+for               return(FOR);
+to                return(TO);
+read              return(READ);
+write             return(WRITE);
+not               return(NOT);
 
+\;                return(SEMICOLON);
+\:                return(COLON);
+\,                return(COMMA);
+\(                return(OPEN_P);
+\)                return(CLOSE_P);
+":="              return(ASSIGN);
+"="               return(EQ);
+">"               return(GT);
+">="              return(GTE);
+"<"               return(LT);
+"<="              return(LTE);
+"<>"              return(NEQ);
+"?"               return(CONDITIONAL);
+\*                return(MUL_OP);
+\/                return(DIV_OP);
+\+                return(PLUS_OP);
+\-                return(MINUS_OP);
+mod               return(MOD_OP);
+and               return(AND_OP);
+or                return(OR_OP);
+<<                return(LS_OP);
+>>                return(RS_OP);
+<<<               return(LSF_OP);
+>>>               return(RSF_OP);
 
-program           handleToken(&symTable, "<program>");
-declare           handleToken(&symTable, "<declare>");
-begin             handleToken(&symTable, "<begin>");
-integer           handleToken(&symTable, "<integer>");
-decimal           handleToken(&symTable, "<decimal>");
-if                handleToken(&symTable, "<if>");
-then              handleToken(&symTable, "<then>");
-else              handleToken(&symTable, "<else>");
-end               handleToken(&symTable, "<end>");
-while             handleToken(&symTable, "<while>");
-for               handleToken(&symTable, "<for>");
-to                handleToken(&symTable, "<to>");
-read              handleToken(&symTable, "<read>");
-write             handleToken(&symTable, "<write>");
-{open_p}          handleToken(&symTable, "<open_p>");
-{close_p}         handleToken(&symTable, "<close_p>");
-{semicolon}       handleToken(&symTable, "<semicolon>");
-{comma}           handleToken(&symTable, "<comma>");
-{modop}           handleToken(&symTable, "<modop>");
-{negop}           handleToken(&symTable, "<negop>");
-{assignop}        handleToken(&symTable, "<assignop>");
-{literal}         handleToken(&symTable, "<literal>");
-{relop}	         handleToken(&symTable, "<relop>");
-{addop}	         handleToken(&symTable, "<addop>");
-{mulop}	         handleToken(&symTable, "<mulop>");
-{shiftop}	      handleToken(&symTable, "<shiftop>");
-{constant}	      handleToken(&symTable, "<constant>");
-{digit}{letter}*  yyerror("invalid input");
-{identifier}	   handleToken(&symTable, "<identifier>");
+{literal}         return(LITERAL);
+{constant}	      return(CONSTANT);
+{identifier}	   return(IDENTIFIER);
 
 .                 yyerror("invalid input");
 %%
