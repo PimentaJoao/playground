@@ -1,0 +1,10 @@
+[legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9]
+audible-bell=true
+background-color='rgb(17,17,17)'
+cell-height-scale=1.2000000000000002
+cell-width-scale=1.0
+default-size-columns=90
+font='Fira Code 12'
+foreground-color='rgb(160,160,160)'
+use-system-font=false
+use-theme-colors=false
