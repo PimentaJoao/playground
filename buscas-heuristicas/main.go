@@ -11,16 +11,6 @@ import (
 
 const TOTAL_CIDADES = 20
 
-func ImprimeMatriz(m [20][20]int) {
-	for i, linha := range m {
-		fmt.Printf("%s ", IndexParaCidade[i])
-		for _, item := range linha {
-			fmt.Printf("%d ", item)
-		}
-		fmt.Printf("\n")
-	}
-}
-
 func extraiConexao(conn []string) (int, int, int) {
 	city1, ok := CidadeParaIndex[conn[0]]
 	if !ok {
@@ -104,18 +94,54 @@ func main() {
 	cidadeDeOrigem := "ARAD"
 
 	fmt.Printf("Caminho da cidade de origem %s até Bucharest...\n\n", cidadeDeOrigem)
-	/*
-		fmt.Printf("ALGORITMO GULOSO:\n\n")
-		buscaGulosaAteBucharest(romenia, cidadeDeOrigem)
-		for _, cidade := range caminhoGuloso {
-			fmt.Printf("-> %s ", cidade)
-		}
-
-	*/
-	fmt.Printf("\n\nALGORITMO A*:\n\n")
-	caminhoAEstrela := buscaAEstrelaAteBucharest(romenia, cidadeDeOrigem)
-	for _, cidade := range caminhoAEstrela {
+	fmt.Printf("ALGORITMO GULOSO:\n\n")
+	buscaGulosaAteBucharest(romenia, cidadeDeOrigem)
+	fmt.Printf("Caminho encontrado: ")
+	for _, cidade := range caminhoGuloso {
 		fmt.Printf("-> %s ", cidade)
+	}
+
+	fmt.Printf("\n\nIniciando A*... \n\n")
+	time.Sleep(3 * time.Second)
+
+	fmt.Printf("\n\n\n\nALGORITMO A*:\n\n")
+	buscaAEstrelaAteBucharest(romenia, cidadeDeOrigem)
+}
+
+var caminhoGuloso = []string{}
+
+func buscaGulosaAteBucharest(grafo [][]int, cidadeAtual string) {
+	cidadeDeMenorDistancia := ""
+	menorDistancia := 9999999
+
+	fmt.Printf("CAMINHOS ENCONTRADOS: \n\n")
+
+	for i, ligacao := range grafo[CidadeParaIndex[cidadeAtual]] {
+		if ligacao > 0 {
+			if menorDistancia > CidadesDistanciaAteBucharest[i] {
+				menorDistancia = CidadesDistanciaAteBucharest[i]
+				cidadeDeMenorDistancia = IndexParaCidade[i]
+			}
+
+			// Exibe o estado encontrado nesta camada da árvore de busca, ou seja,
+			// encontra as cidades adjacentes à cidade atual da recursividade.
+			fmt.Printf("%s\n%d milhas até Bucharest\n\n", IndexParaCidade[i], CidadesDistanciaAteBucharest[i])
+		}
+	}
+
+	fmt.Println("**********************************")
+	fmt.Println("RESULTADOS: ")
+	fmt.Println("cidade de menor distancia: ", cidadeDeMenorDistancia)
+	fmt.Println(menorDistancia, "milhas")
+	fmt.Println("**********************************")
+	fmt.Println("")
+
+	caminhoGuloso = append(caminhoGuloso, cidadeAtual)
+
+	if menorDistancia > 0 {
+		buscaGulosaAteBucharest(grafo, cidadeDeMenorDistancia)
+	} else if menorDistancia == 0 {
+		caminhoGuloso = append(caminhoGuloso, cidadeDeMenorDistancia)
 	}
 }
 
@@ -125,6 +151,7 @@ type caminhoPossivel struct {
 }
 
 func buscaAEstrelaAteBucharest(grafo [][]int, cidadeAtual string) []string {
+	// Inicializa árvore de estados.
 	caminhosPossiveis := make([]caminhoPossivel, 0, 100)
 
 	solucao := []string{}
@@ -184,17 +211,13 @@ func buscaAEstrelaAteBucharest(grafo [][]int, cidadeAtual string) []string {
 			novoCusto := calculaCusto(grafo, caminhoAnalisado)
 
 			fmt.Println("caminho descoberto: ", caminhoAnalisado)
+			fmt.Println("custo calculado:", novoCusto)
+			time.Sleep(1 * time.Second)
 
 			caminhosPossiveis = append(caminhosPossiveis, caminhoPossivel{
 				caminho: caminhoAnalisado,
 				custo:   novoCusto,
 			})
-
-			for _, cp := range caminhosPossiveis {
-				fmt.Println(cp.caminho, cp.custo)
-			}
-			fmt.Println()
-			time.Sleep(1 * time.Second)
 
 		}
 
@@ -212,11 +235,8 @@ func buscaAEstrelaAteBucharest(grafo [][]int, cidadeAtual string) []string {
 		}
 
 		idxCaminhoAnalisado = idxCaminhoMenorCusto
-		time.Sleep(3 * time.Second)
-		fmt.Println()
-		fmt.Println()
-		fmt.Println()
-
+		time.Sleep(4 * time.Second)
+		fmt.Printf("\n\n\n")
 	}
 
 	return solucao
@@ -244,22 +264,3 @@ func calculaCusto(grafo [][]int, caminho []string) int {
 func removeCaminho(caminhosPossiveis []caminhoPossivel, idx int) []caminhoPossivel {
 	return append(caminhosPossiveis[:idx], caminhosPossiveis[idx+1:]...)
 }
-
-/*
-[[A]]
-
-[[A S][A T][A Z]]
-   x
-
-[[A S A][A S F][A S O][A S R][A T][A Z]]
-                         x
-
-[[A S A][A S F][A S O][A S R P][A S R S][A S R C][A T][A Z]]
-           x
-
-[[A S A][A S F S][A S F B][A S O][A S R P][A S R S][A S R C][A T][A Z]]
-                                     x
-
-[[A S A][A S F S][A S F B][A S O][A S R P B][A S R P C][A S R P R][A S R S][A S R C][A T][A Z]]
-                                      x
-*/
