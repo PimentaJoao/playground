@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const TOTAL_CIDADES = 20
@@ -103,90 +104,162 @@ func main() {
 	cidadeDeOrigem := "ARAD"
 
 	fmt.Printf("Caminho da cidade de origem %s até Bucharest...\n\n", cidadeDeOrigem)
+	/*
+		fmt.Printf("ALGORITMO GULOSO:\n\n")
+		buscaGulosaAteBucharest(romenia, cidadeDeOrigem)
+		for _, cidade := range caminhoGuloso {
+			fmt.Printf("-> %s ", cidade)
+		}
 
-	fmt.Printf("ALGORITMO GULOSO:\n\n")
-	buscaGulosaAteBucharest(romenia, cidadeDeOrigem)
-	for _, cidade := range caminhoGuloso {
-		fmt.Printf("-> %s ", cidade)
-	}
-
+	*/
 	fmt.Printf("\n\nALGORITMO A*:\n\n")
-	buscaAEstrelaAteBucharest(romenia, cidadeDeOrigem)
+	caminhoAEstrela := buscaAEstrelaAteBucharest(romenia, cidadeDeOrigem)
 	for _, cidade := range caminhoAEstrela {
 		fmt.Printf("-> %s ", cidade)
 	}
 }
 
-var caminhoGuloso = []string{}
-
-func buscaGulosaAteBucharest(grafo [][]int, cidadeAtual string) {
-	cidadeDeMenorDistancia := ""
-	menorDistancia := 9999999
-
-	fmt.Printf("CAMINHOS ENCONTRADOS: \n\n")
-
-	for i, ligacao := range grafo[CidadeParaIndex[cidadeAtual]] {
-		if ligacao > 0 {
-			if menorDistancia > CidadesDistanciaAteBucharest[i] {
-				menorDistancia = CidadesDistanciaAteBucharest[i]
-				cidadeDeMenorDistancia = IndexParaCidade[i]
-			}
-
-			// Exibe o estado encontrado nesta camada da árvore de busca, ou seja,
-			// encontra as cidades adjacentes à cidade atual da recursividade.
-			fmt.Printf("%s\n%d milhas até Bucharest\n\n", IndexParaCidade[i], CidadesDistanciaAteBucharest[i])
-		}
-	}
-
-	fmt.Println("**********************************")
-	fmt.Println("RESULTADOS: ")
-	fmt.Println("cidade de menor distancia: ", cidadeDeMenorDistancia)
-	fmt.Println(menorDistancia, "milhas")
-	fmt.Println("**********************************")
-	fmt.Println("")
-
-	caminhoGuloso = append(caminhoGuloso, cidadeAtual)
-
-	if menorDistancia > 0 {
-		buscaGulosaAteBucharest(grafo, cidadeDeMenorDistancia)
-	} else if menorDistancia == 0 {
-		caminhoGuloso = append(caminhoGuloso, cidadeDeMenorDistancia)
-	}
+type caminhoPossivel struct {
+	caminho []string
+	custo   int
 }
 
-var caminhoAEstrela = []string{}
+func buscaAEstrelaAteBucharest(grafo [][]int, cidadeAtual string) []string {
+	caminhosPossiveis := make([]caminhoPossivel, 0, 100)
 
-func buscaAEstrelaAteBucharest(grafo [][]int, cidadeAtual string) {
-	if cidadeAtual == "BUCHAREST" {
-		caminhoAEstrela = append(caminhoAEstrela, "BUCHAREST")
-		return
+	solucao := []string{}
+
+	// Inicializa os possíveis caminhos a serem seguidos.
+	if len(caminhosPossiveis) == 0 {
+		cp := caminhoPossivel{
+			// Cidade de origem da busca.
+			caminho: []string{cidadeAtual},
+
+			// Peso inicial (nenhuma distância na aresta + distância geométrica até Bucharest).
+			custo: 0 + CidadesDistanciaAteBucharest[CidadeParaIndex[cidadeAtual]],
+		}
+
+		caminhosPossiveis = append(caminhosPossiveis, cp)
 	}
 
-	cidadeDeMenorDistancia := ""
-	menorDistancia := 9999999
+	// Flag que indica se Bucharest foi encontrada ou não.
+	encontrou := false
 
-	fmt.Printf("CAMINHOS ENCONTRADOS: \n\n")
+	// Indica que o primeiro caminho analisado é o primeiro dos possíveis.
+	// A escolhas das subsequentes análises serão feitas por meio do menor custo de caminho.
+	idxCaminhoAnalisado := 0
 
-	for i, ligacao := range grafo[CidadeParaIndex[cidadeAtual]] {
-		if ligacao > 0 {
-			if menorDistancia > CidadesDistanciaAteBucharest[i]+ligacao {
-				menorDistancia = CidadesDistanciaAteBucharest[i] + ligacao
-				cidadeDeMenorDistancia = IndexParaCidade[i]
+	for !encontrou {
+
+		caminhoAnalisado := caminhosPossiveis[idxCaminhoAnalisado].caminho
+
+		fmt.Println("caminho analisado agora: ", caminhoAnalisado)
+		fmt.Println()
+		time.Sleep(1 * time.Second)
+
+		ultimaCidade := caminhoAnalisado[len(caminhoAnalisado)-1]
+
+		if ultimaCidade == "BUCHAREST" {
+			encontrou = true
+			solucao = caminhoAnalisado
+			break
+		}
+
+		// Busca no grafo todas as informações de conexão (distância) com a última cidade do caminho analisado.
+		conexoesUltimaCidade := grafo[CidadeParaIndex[ultimaCidade]]
+
+		// Controla se o algoritmo deve ou não remover o atual caminho analisado, caso existam novos caminhos
+		// encontrados a partir deste.
+		deveRemover := false
+
+		for idxCidadeConectada, distancia := range conexoesUltimaCidade {
+			// Pula a análise entre cidades que não estão conectadas (distância igual a 0).
+			if distancia == 0 {
+				continue
 			}
 
-			// Exibe o estado encontrado nesta camada da árvore de busca, ou seja,
-			// encontra as cidades adjacentes à cidade atual da recursividade.
-			fmt.Printf("%s\n%d milhas até Bucharest\n\n", IndexParaCidade[i], CidadesDistanciaAteBucharest[i]+ligacao)
+			deveRemover = true
+
+			caminhoAnalisado := append(caminhoAnalisado, IndexParaCidade[idxCidadeConectada])
+			novoCusto := calculaCusto(grafo, caminhoAnalisado)
+
+			fmt.Println("caminho descoberto: ", caminhoAnalisado)
+
+			caminhosPossiveis = append(caminhosPossiveis, caminhoPossivel{
+				caminho: caminhoAnalisado,
+				custo:   novoCusto,
+			})
+
+			for _, cp := range caminhosPossiveis {
+				fmt.Println(cp.caminho, cp.custo)
+			}
+			fmt.Println()
+			time.Sleep(1 * time.Second)
+
 		}
+
+		if deveRemover {
+			caminhosPossiveis = removeCaminho(caminhosPossiveis, idxCaminhoAnalisado)
+		}
+
+		idxCaminhoMenorCusto := 0
+		caminhoMenorCusto := 999999999
+		for idxCaminho, cam := range caminhosPossiveis {
+			if cam.custo < caminhoMenorCusto {
+				caminhoMenorCusto = cam.custo
+				idxCaminhoMenorCusto = idxCaminho
+			}
+		}
+
+		idxCaminhoAnalisado = idxCaminhoMenorCusto
+		time.Sleep(3 * time.Second)
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()
+
 	}
 
-	fmt.Println("**********************************")
-	fmt.Println("RESULTADOS: ")
-	fmt.Println("cidade de menor distancia composta: ", cidadeDeMenorDistancia)
-	fmt.Println(menorDistancia, "milhas")
-	fmt.Println("**********************************")
-	fmt.Println("")
-
-	caminhoAEstrela = append(caminhoAEstrela, cidadeAtual)
-	buscaAEstrelaAteBucharest(grafo, cidadeDeMenorDistancia)
+	return solucao
 }
+
+func calculaCusto(grafo [][]int, caminho []string) int {
+	somaDistanciasCaminho := 0
+	for idx := 0; idx < len(caminho); idx++ {
+		// Verifica se existe uma cidade depois da atual sendo analisada, para então somar sua distância.
+		if len(caminho) == idx+1 {
+			break
+		}
+
+		indexCidade := CidadeParaIndex[caminho[idx]]
+		indexProximaCidade := CidadeParaIndex[caminho[idx+1]]
+
+		somaDistanciasCaminho += grafo[indexCidade][indexProximaCidade]
+	}
+
+	distanciaGeometricaUltimaCidade := CidadesDistanciaAteBucharest[CidadeParaIndex[caminho[len(caminho)-1]]]
+
+	return somaDistanciasCaminho + distanciaGeometricaUltimaCidade
+}
+
+func removeCaminho(caminhosPossiveis []caminhoPossivel, idx int) []caminhoPossivel {
+	return append(caminhosPossiveis[:idx], caminhosPossiveis[idx+1:]...)
+}
+
+/*
+[[A]]
+
+[[A S][A T][A Z]]
+   x
+
+[[A S A][A S F][A S O][A S R][A T][A Z]]
+                         x
+
+[[A S A][A S F][A S O][A S R P][A S R S][A S R C][A T][A Z]]
+           x
+
+[[A S A][A S F S][A S F B][A S O][A S R P][A S R S][A S R C][A T][A Z]]
+                                     x
+
+[[A S A][A S F S][A S F B][A S O][A S R P B][A S R P C][A S R P R][A S R S][A S R C][A T][A Z]]
+                                      x
+*/
