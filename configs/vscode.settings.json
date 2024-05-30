@@ -1,0 +1,24 @@
+{
+    // No welcome page
+    "workbench.startupEditor": "none",
+
+    // Font
+    "editor.fontFamily": "Fira Code",
+    "editor.fontLigatures": true,
+    "editor.fontWeight": "500", // Medium
+    
+    // Removes nested scopes from the top of the editor
+    "editor.stickyScroll.enabled": false,
+
+    // Vertical ruler
+    "editor.rulers": [120],
+    "workbench.colorCustomizations": {
+        "editorRuler.foreground": "#359bad"
+    },
+
+    // Disable foreign interaction
+    "telemetry.telemetryLevel": "off",
+    "update.showReleaseNotes": false,
+    "update.mode": "none"
+}
+
