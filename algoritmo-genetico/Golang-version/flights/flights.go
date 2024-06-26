@@ -11,7 +11,7 @@ type Flight struct {
 	Cost          int
 }
 
-// NewFlight cria uma nova instância de Flight
+// NewFlight cria uma nova instancia de Flight
 func NewFlight(origin, destination, departureTime, arrivalTime string, cost int) Flight {
 	return Flight{
 		Origin:        origin,
@@ -22,7 +22,7 @@ func NewFlight(origin, destination, departureTime, arrivalTime string, cost int)
 	}
 }
 
-// String retorna uma representação em string do voo
+// String retorna uma representacao em string do voo
 func (f Flight) String() string {
 	return fmt.Sprintf("From: %s, To: %s, Departure: %s, Arrival: %s, Cost: %d",
 		f.Origin, f.Destination, f.DepartureTime, f.ArrivalTime, f.Cost)
