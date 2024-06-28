@@ -10,15 +10,23 @@
     // Removes nested scopes from the top of the editor
     "editor.stickyScroll.enabled": false,
 
-    // Vertical ruler
+    // Vertical ruler + file tree customization
     "editor.rulers": [120],
+    "workbench.tree.indent": 32,
     "workbench.colorCustomizations": {
-        "editorRuler.foreground": "#359bad"
+        "editorRuler.foreground": "#359bad",
+        "tree.indentGuidesStroke": "#4ad5ee"
     },
+
+    // Simplifies minimap
+    "editor.minimap.renderCharacters": false,
 
     // Disable foreign interaction
     "telemetry.telemetryLevel": "off",
     "update.showReleaseNotes": false,
-    "update.mode": "none"
+    "update.mode": "none",
+
+    // VSCode ignores javascript validation in HTML files (for better HTMX compability)
+    "html.validate.scripts": false
 }
 
