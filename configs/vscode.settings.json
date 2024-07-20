@@ -27,6 +27,28 @@
     "update.mode": "none",
 
     // VSCode ignores javascript validation in HTML files (for better HTMX compability)
-    "html.validate.scripts": false
+    "html.validate.scripts": false,
+
+    // Smooth animations in VSCode
+    "editor.smoothScrolling": true,
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorBlinking": "phase",
+    "workbench.list.smoothScrolling": true,
+
+    // templ stuff
+    "[templ]": {
+        "editor.defaultFormatter": "a-h.templ"
+    },
+    "tailwindCSS.includeLanguages": {
+        "templ": "html"
+    },
+    "templ.log": "/home/joao/go/logs/templ/templ.log",
+    "templ.goplsLog": "/home/joao/go/logs/templ/gopls.log",
+    "templ.http": "localhost:7575",
+    "templ.goplsRPCTrace": true,
+    "templ.pprof": false,
+
+    // misc
+    "git.openRepositoryInParentFolders": "never"
 }
 
