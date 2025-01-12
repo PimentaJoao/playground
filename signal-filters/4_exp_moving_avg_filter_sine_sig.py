@@ -15,7 +15,7 @@ y = []
 y_noisy_sig = []
 y_exp_mov_avg = []
 
-alpha = 0.2
+alpha = 0.1
 
 amplitude = 0.2  # Amplitude da onda senoidal
 frequency = 0.05  # Frequência da onda senoidal

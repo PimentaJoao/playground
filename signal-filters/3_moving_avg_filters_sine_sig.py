@@ -16,7 +16,7 @@ y_noisy_sig = []
 y_bulk_mov_avg = []
 y_iter_mov_avg = []
 
-w = 50 # Tamanho da janela
+w = 10 # Tamanho da janela
 
 amplitude = 0.2  # Amplitude da onda senoidal
 frequency = 0.05  # Frequência da onda senoidal
