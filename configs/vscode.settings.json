@@ -5,7 +5,7 @@
     // Font
     "editor.fontFamily": "Fira Code",
     "editor.fontLigatures": true,
-    "editor.fontWeight": "500", // Medium
+    "editor.fontWeight": "500", // medium
     
     // Removes nested scopes from the top of the editor
     "editor.stickyScroll.enabled": false,
@@ -15,8 +15,13 @@
     "workbench.tree.indent": 32,
     "workbench.colorCustomizations": {
         "editorRuler.foreground": "#359bad",
-        "tree.indentGuidesStroke": "#4ad5ee"
+        "tree.indentGuidesStroke": "#4ad5ee",
+        // Maintains similiar-to-default color for modified git tracked files
+        "gitDecoration.modifiedResourceForeground": "#f7d49f"
     },
+
+    // Theme
+    "workbench.colorTheme": "GitHub Dark Default",
 
     // Simplifies minimap
     "editor.minimap.renderCharacters": false,
@@ -26,27 +31,15 @@
     "update.showReleaseNotes": false,
     "update.mode": "none",
 
-    // VSCode ignores javascript validation in HTML files (for better HTMX compability)
-    "html.validate.scripts": false,
-
     // Smooth animations in VSCode
     "editor.smoothScrolling": true,
     "editor.cursorSmoothCaretAnimation": "on",
     "editor.cursorBlinking": "phase",
     "workbench.list.smoothScrolling": true,
 
-    // templ stuff
-    "[templ]": {
-        "editor.defaultFormatter": "a-h.templ"
-    },
-    "tailwindCSS.includeLanguages": {
-        "templ": "html"
-    },
-    "templ.log": "/home/joao/go/logs/templ/templ.log",
-    "templ.goplsLog": "/home/joao/go/logs/templ/gopls.log",
-    "templ.http": "localhost:7575",
-    "templ.goplsRPCTrace": true,
-    "templ.pprof": false,
+    // Svelte stuff
+    "svelte.ask-to-enable-ts-plugin": false,
+    "svelte.enable-ts-plugin": true,
 
     // misc
     "git.openRepositoryInParentFolders": "never"
