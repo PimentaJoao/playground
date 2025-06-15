@@ -1,0 +1,4 @@
+alias air="/home/joao/go/bin/air"
+alias templ="/home/joao/go/bin/templ"
+alias p3="python3"
+alias updt-dsc="sudo vi /usr/share/discord/resources/build_info.json"
