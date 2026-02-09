@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 # >>> x
 # [0, 0.2, 0.4, 0.6, ..., 99.6, 99.8, 100.0]
 # 
+# (this was made before I learned about numpy's linspace)
+# 
 def create_array(start, step, end):
     arr = []
     i = 0
@@ -71,4 +73,46 @@ def plot_exp_moving_avg_filter_sine_sig(x, y_groundtruth, y_noisy_sig, y_exp_mov
     plt.xlabel("tempo (s)")
     plt.ylim((1.5, 2.5))
     plt.subplots_adjust(top=0.93,bottom=0.11,left=0.075,right=0.94,hspace=0.2,wspace=0.2)
+    plt.show()
+
+def plot_kalman_filter_1D_position_pos(t, y_groundtruth_pos, y_kalman_pos, y_noisy_pos):
+    plt.plot(t, y_noisy_pos, linewidth=.8, label='sinal ruidoso')
+    plt.plot(t, y_groundtruth_pos, linewidth=4, color='k', label='posição real')
+    plt.plot(t, y_kalman_pos, linewidth=1.7, color='limegreen', label='estimativa do filtro de Kalman')
+    plt.ylabel("Posição (m)")
+    plt.xlabel("tempo (s)")
+    plt.legend()
+    plt.show()
+
+def plot_kalman_filter_1D_position_vel(t, y_groundtruth_vel, y_kalman_vel):
+    plt.plot(t, y_groundtruth_vel, linewidth=1.7, color='k', label='velocidade real')
+    plt.plot(t, y_kalman_vel, linewidth=3, color='g', label='estimativa do filtro de Kalman')
+    plt.ylabel("Velocidade (m/s)")
+    plt.xlabel("tempo (s)")
+    plt.legend()
+    plt.show()
+
+def plot_kalman_filter_1D_position_acc(t, y_groundtruth_acc, y_kalman_acc):
+    plt.plot(t, y_groundtruth_acc, linewidth=1.7, color='k', label='aceleração real')
+    plt.plot(t, y_kalman_acc, linewidth=3, color='g', label='estimativa do filtro de Kalman')
+    plt.ylabel("Aceleração (m/s²)")
+    plt.xlabel("tempo (s)")
+    plt.legend()
+    plt.show()
+
+def plot_kalman_filter_1D_position_sigmas(t, sigmas):
+    _, axes = plt.subplots(3, 3, figsize=(16, 12))
+    axes = axes.flatten()
+
+    for i in range(3):
+        for j in range(3):
+            idx = i * 3 + j
+            label = f"Σ[{i},{j}]"
+            values = [sigma[i, j] for sigma in sigmas]
+            axes[idx].plot(t, values, linewidth=1.7, color='k', label=label)
+            axes[idx].set_xlabel("tempo (s)")
+            axes[idx].legend()
+            axes[idx].grid(True)
+
+    plt.tight_layout()
     plt.show()

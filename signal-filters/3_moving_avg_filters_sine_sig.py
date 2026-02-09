@@ -2,15 +2,21 @@ import math
 import utils
 from random import uniform
     
-x = utils.create_array(0, 0.2, 100)
+dt = 0.2 # Taxa de amostragem
+n = 100 # Número de amostras
+
+# Eixo x do gráfico
+x = utils.create_array(0, dt, n)
+
+# Eixo y do gráfico
 y_groundtruth = []
 y_noisy_sig = []
 y_bulk_mov_avg = []
 y_iter_mov_avg = []
 
 w = 15 # Tamanho da janela
-amplitude = 0.2  # Amplitude da onda senoidal (20 centímetros)
-frequency = 0.05  # Frequência da onda senoidal
+amplitude = 0.2 # Amplitude da onda senoidal (20 centímetros)
+frequency = 0.05 # Frequência da onda senoidal
 base_sig = 2 # Metros
 noise_lvl = 0.2 # Ruído de +- 20 centímetros
 

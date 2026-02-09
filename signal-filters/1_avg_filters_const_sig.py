@@ -1,13 +1,19 @@
 from random import uniform
 import utils
 
-x = utils.create_array(0, 0.2, 100)
+dt = 0.2 # Taxa de amostragem
+n = 100 # Número de amostras
+
+# Eixo x do gráfico
+x = utils.create_array(0, dt, n)
+
+# Eixo y do gráfico
 y_noisy_sig = []
 y_bulk_avg = []
 y_iter_avg = []
 
 base_sig = 2 # Metros
-noise_lvl = 0.3 # Ruído de +- 20 centímetros
+noise_lvl = 0.3 # Ruído de +- 30 centímetros
 
 for _ in range(len(x)):
     noise = uniform(-1, 1) * noise_lvl
