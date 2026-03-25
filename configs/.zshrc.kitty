@@ -1,0 +1,101 @@
+# CUSTOM THEME
+
+# Enable prompt substitution
+setopt PROMPT_SUBST
+
+# Load colors
+autoload -U colors && colors
+
+# Modern directory/file colors
+export LS_COLORS="di=01;34:ln=01;36:so=01;35:pi=33:ex=01;32:bd=01;33:cd=01;33:su=37;41:sg=30;43:tw=30;42:ow=34;42"
+
+# Force colored ls
+alias ls='ls --color=auto'
+alias ll='ls -lah --color=auto'
+alias la='ls -A --color=auto'
+
+# robbyrussell.zsh-theme
+PROMPT="%(?:%{$fg_bold[green]%}%1{➜%}:%{$fg_bold[red]%}%1{➜%}) %{$fg_bold[cyan]%}%~%{$reset_color%}"
+PROMPT+='$(git_prompt_info):'
+
+ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
+ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}%1{✗%}"
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
+
+git_prompt_info() {
+  local branch
+  branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return
+  echo " (%{$fg[red]%}${branch}%{$reset_color%})"
+}
+
+# FIXING KITTY + ZSH
+
+# End, Home and Del keys
+bindkey '\e[H' beginning-of-line
+bindkey '\e[F' end-of-line
+bindkey '\e[3~' delete-char
+
+# Ctrl+Left Arrow
+bindkey '^[[1;5D' backward-word
+bindkey '^[[5D' backward-word
+
+# Ctrl+Right Arrow
+bindkey '^[[1;5C' forward-word
+bindkey '^[[5C' forward-word
+
+bindkey -e
+
+# HISTORY
+
+# location of the history file
+HISTFILE=~/.zsh_history
+
+# maximum number of lines in a session
+HISTSIZE=10000
+
+# maximum number of lines saved to the history file
+SAVEHIST=10000
+
+# If typed word isn't a command and is a directory in current dir, cd into it
+setopt AUTO_CD
+
+# Allow multiple terminal sessions to all append to one zsh command history
+setopt APPEND_HISTORY 
+
+# Add commands as they are typed, don't wait until shell exit
+setopt INC_APPEND_HISTORY 
+
+# Do not write events to history that are duplicates of previous events
+setopt HIST_IGNORE_DUPS
+
+# When searching history don't display results already cycled through twice
+setopt HIST_FIND_NO_DUPS
+
+# Remove extra blanks from each command line being added to history
+setopt HIST_REDUCE_BLANKS
+
+# Include more information about when the command was executed, etc
+setopt EXTENDED_HISTORY
+
+# Allow completion from within a word/phrase
+setopt COMPLETE_IN_WORD 
+
+# When completing from the middle of a word, move the cursor to the end of the word
+setopt ALWAYS_TO_END
+
+# AUTOSUGGESTIONS
+
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#606060" # Dark-ish grey
+ZSH_AUTOSUGGEST_STRATEGY=(history completion) # Looks through history, then regular completions
+bindkey '^ ' autosuggest-accept # Ctrl + Space
+
+# SYNTAX HIGHLIGHT
+
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# ALIASES
+
+alias v="nvim"
+alias mk="make"
