@@ -11,12 +11,11 @@ export LS_COLORS="di=01;34:ln=01;36:so=01;35:pi=33:ex=01;32:bd=01;33:cd=01;33:su
 
 # Force colored ls
 alias ls='ls --color=auto'
-alias ll='ls -lah --color=auto'
-alias la='ls -A --color=auto'
+alias la='ls -lah --color=auto'
 
 # robbyrussell.zsh-theme
 PROMPT="%(?:%{$fg_bold[green]%}%1{➜%}:%{$fg_bold[red]%}%1{➜%}) %{$fg_bold[cyan]%}%~%{$reset_color%}"
-PROMPT+='$(git_prompt_info):'
+PROMPT+='$(git_prompt_info) '
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
@@ -26,7 +25,13 @@ ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
 git_prompt_info() {
   local branch
   branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return
-  echo " (%{$fg[red]%}${branch}%{$reset_color%})"
+  echo " (${branch})"
+}
+
+# Clear command completely clears terminal, stopping scrollback.
+clear() {
+  command clear
+  printf '\033[3J' # clears scrollback buffer
 }
 
 # FIXING KITTY + ZSH
@@ -75,6 +80,9 @@ setopt HIST_FIND_NO_DUPS
 # Remove extra blanks from each command line being added to history
 setopt HIST_REDUCE_BLANKS
 
+# Ignore specific commands
+HISTORY_IGNORE="(ls|la|pwd|exit)"
+
 # Include more information about when the command was executed, etc
 setopt EXTENDED_HISTORY
 
@@ -84,18 +92,56 @@ setopt COMPLETE_IN_WORD
 # When completing from the middle of a word, move the cursor to the end of the word
 setopt ALWAYS_TO_END
 
+# COMPLETION
+
+# The path to the plugin is already present in $fpath, we only need to load it.
+autoload -Uz compinit
+compinit
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+
+# HISTDB
+
+source /usr/share/zsh/plugins/zsh-histdb/sqlite-history.zsh
+_zsh_autosuggest_strategy_histdb() {
+    local query="
+        SELECT
+	    commands.argv
+	FROM history
+	LEFT JOIN commands
+	    ON history.command_id = commands.rowid
+        LEFT JOIN places
+	    ON history.place_id = places.rowid
+        WHERE places.dir LIKE '$(sql_escape $PWD)%'
+        AND commands.argv LIKE '$(sql_escape $1)%'
+	AND history.exit_status = 0
+        GROUP BY commands.argv
+	ORDER BY COUNT(*) DESC
+	LIMIT 1
+    "
+    suggestion=$(_histdb_query "$query")
+}
+
 # AUTOSUGGESTIONS
 
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#606060" # Dark-ish grey
-ZSH_AUTOSUGGEST_STRATEGY=(history completion) # Looks through history, then regular completions
+ZSH_AUTOSUGGEST_STRATEGY=(histdb) # Looks through history for completion
 bindkey '^ ' autosuggest-accept # Ctrl + Space
 
 # SYNTAX HIGHLIGHT
 
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# ALIASES
+# unknown / incomplete input (what you're typing)
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#777777'
+
+# valid command
+ZSH_HIGHLIGHT_STYLES[command]='fg=white'
+
+# error after execution
+ZSH_HIGHLIGHT_STYLES[command-not-found]='fg=red,bold'
+
+# CUSTOM ALIASES
 
 alias v="nvim"
 alias mk="make"
