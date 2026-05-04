@@ -145,3 +145,4 @@ ZSH_HIGHLIGHT_STYLES[command-not-found]='fg=red,bold'
 
 alias v="nvim"
 alias mk="make"
+alias godot="nohup ~/Godot/Godot_v4.6.2-stable_linux.x86_64 > /dev/null 2>&1 &"

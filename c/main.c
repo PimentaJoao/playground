@@ -15,7 +15,7 @@ int main() {
     printf("\n-----------\n\n");
 
     /* Strings and arrays */
-    char arr[] = "bye!"; 
+    char arr[] = "bye!";
     printf("string from an array: %s\n", arr);
     printf("first char from an array: %c\n", arr[0]);
     printf("second char from an array: %c\n", arr[1]);
